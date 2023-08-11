@@ -1,0 +1,5 @@
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranAppOOP202308\RestoranAppOOP202308\obj\Debug\net7.0\RestoranAppOOP202308.csproj.AssemblyReference.cache
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranAppOOP202308\RestoranAppOOP202308\obj\Debug\net7.0\RestoranAppOOP202308.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranAppOOP202308\RestoranAppOOP202308\obj\Debug\net7.0\RestoranAppOOP202308.AssemblyInfoInputs.cache
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranAppOOP202308\RestoranAppOOP202308\obj\Debug\net7.0\RestoranAppOOP202308.AssemblyInfo.cs
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranAppOOP202308\RestoranAppOOP202308\obj\Debug\net7.0\RestoranAppOOP202308.csproj.CoreCompileInputs.cache
