@@ -1,0 +1,15 @@
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\bin\Debug\net6.0\RestoranOOPonNet6.exe
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\bin\Debug\net6.0\RestoranOOPonNet6.deps.json
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\bin\Debug\net6.0\RestoranOOPonNet6.runtimeconfig.json
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\bin\Debug\net6.0\RestoranOOPonNet6.dll
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\bin\Debug\net6.0\RestoranOOPonNet6.pdb
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.csproj.AssemblyReference.cache
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.AssemblyInfoInputs.cache
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.AssemblyInfo.cs
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.csproj.CoreCompileInputs.cache
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.dll
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\refint\RestoranOOPonNet6.dll
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.pdb
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\RestoranOOPonNet6.genruntimeconfig.cache
+C:\Users\Maksim\source\repos\OOP\Rap\RestoranOOPonNet6\RestoranOOPonNet6\obj\Debug\net6.0\ref\RestoranOOPonNet6.dll
