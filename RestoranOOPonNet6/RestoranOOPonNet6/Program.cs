@@ -8,13 +8,17 @@ namespace RestoranOOPonNet6
     {
             static void Main(string[] args)
             {
-                Console.WriteLine("Hello again my restaurant!!! ;) ");
+                Console.WriteLine("Hello again my restaurant!!! ;\n");
 
-            var dish = new Dish();
-            dish.CreateAssortiment();
-            dish.CreateAssortiment();
+            /*            var dish = new Dish();
+                        dish.CreateAssortiment();
+                        dish.CreateAssortiment();
 
-            dish.ShowFullАssortiment(KindVariables.Patiekalas);
+                        dish.ShowFullАssortiment(KindVariables.Patiekalas);*/
+
+            TableAndPlace tableAndPlace = new TableAndPlace();
+            tableAndPlace.CreateNewTable();
+            tableAndPlace.ShowAllTablesInfo();
 
             }       
     }

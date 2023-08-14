@@ -112,7 +112,7 @@ namespace RestoranOOPonNet6.Models
             Console.WriteLine("linq");
             var CurrentList = FullАssortiment.Where(k =>
             {
-                k.Kind == kindVariables;
+                //k.Kind == kindVariables;
                 Console.WriteLine("pavadinimas: "+k.Name);
                 return k.Kind == kindVariables;
 
