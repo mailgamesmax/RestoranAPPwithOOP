@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace RestoranOOPonNet6.Models
 {
-    internal class Order
+    internal interface ISimilarFuntions
     {
-        
+
+        string ConvertObjectsToString<T>(T actualClass);
     }
 }

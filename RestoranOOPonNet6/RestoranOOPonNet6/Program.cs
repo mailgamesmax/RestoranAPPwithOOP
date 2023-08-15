@@ -10,16 +10,24 @@ namespace RestoranOOPonNet6
             {
                 Console.WriteLine("Hello again my restaurant!!! ;\n");
 
+             string currentDirectory = Directory.GetCurrentDirectory()+"\\myFiles";
+            //Console.WriteLine("Esamas folderio kelias: " + currentDirectory);
+
+
+
+            // asortimento kurimo testas
             /*            var dish = new Dish();
                         dish.CreateAssortiment();
                         dish.CreateAssortiment();
 
                         dish.ShowFullАssortiment(KindVariables.Patiekalas);*/
 
+
+            // stalu kurimo testas
             TableAndPlace tableAndPlace = new TableAndPlace();
             tableAndPlace.CreateNewTable();
             tableAndPlace.ShowAllTablesInfo();
 
-            }       
+        }
     }
 }

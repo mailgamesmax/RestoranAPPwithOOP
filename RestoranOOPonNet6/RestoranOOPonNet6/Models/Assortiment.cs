@@ -12,7 +12,7 @@ using static RestoranOOPonNet6.Models.Аssortiment;
 
 namespace RestoranOOPonNet6.Models
 {
-    internal abstract class Аssortiment
+    internal abstract class Аssortiment : CommonFunctions
     {
         public enum KindVariables
         {

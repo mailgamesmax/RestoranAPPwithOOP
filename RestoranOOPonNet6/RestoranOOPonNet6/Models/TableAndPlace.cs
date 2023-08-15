@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace RestoranOOPonNet6.Models
 {
-    internal class TableAndPlace
+    internal class TableAndPlace : CommonFunctions //, ISimilarFuntions
     {
         public TableAndPlace CreateNewTable() 
         {
             int inputTableNr = 0;
             int inputAvailiblePlaces = 0;
-            string? requestForRepeatAction;
+            string? repeatAction;
             var createdTable = new TableAndPlace();
             do
             {
@@ -27,11 +29,13 @@ namespace RestoranOOPonNet6.Models
                 UpdateCurrentAvailibleTablesHasPlaces(inputTableNr, inputAvailiblePlaces);
                 Console.WriteLine($"sukurto stalo nr: {createdTable.TableNr}, nominualus/prieinamas vietų sk: {createdTable.NominalAndAvailiblePlaces.Keys.First()} / {createdTable.NominalAndAvailiblePlaces.Values.First()}");
 
+                RecToCSV(createdTable);
+
                 Console.WriteLine();
                 Console.Write("priėti dar vieną stalą? (+) ");
-                requestForRepeatAction = Console.ReadLine();
+                repeatAction = Console.ReadLine();
             }
-            while (requestForRepeatAction == "+");            
+            while (repeatAction == "+");            
             return createdTable; 
         }
 
@@ -65,15 +69,25 @@ namespace RestoranOOPonNet6.Models
         {
             bool ConvertedToIntTableNr = false;
             bool ConvertedToIntPlacesQ = false;
+
             do
             {
                 Console.Write("Priskirkite naujam stalui nr: ");
                 ConvertedToIntTableNr = int.TryParse(Console.ReadLine(), out inputTableNr);
+                int inputedNr = inputTableNr;
                 Console.Write("Kiek vietų turės naujas stalas? ");
                 ConvertedToIntPlacesQ = int.TryParse(Console.ReadLine(), out inputAvailiblePlaces);
+                if (AllTabels.Any(anyTable => anyTable.TableNr == inputedNr))
+                {
+                    ConvertedToIntTableNr = false;
+                }
 
                 if (!ConvertedToIntTableNr && !ConvertedToIntTableNr)
-                { Console.WriteLine("patikrinkite įvestus pasirinkimus ir bandykite dar kartą"); }
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\tpatikrinkite įvestus pasirinkimus ir bandykite dar kartą\n");
+                    Console.ResetColor();
+                }
             }
                 while (ConvertedToIntTableNr == false && ConvertedToIntTableNr == false) ;
         }
@@ -109,6 +123,24 @@ namespace RestoranOOPonNet6.Models
             }
 
         }
+
+        public static void RecToCSV(TableAndPlace table)
+        {
+            //string tableFilePath = currentDirectory + "Tables.csv";
+            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            using (StreamWriter sw = new StreamWriter(tableFilePath, true))
+            {
+                    string line = ConvertObjectsToString(table);
+                    sw.WriteLine(line); 
+                
+            }
+        }
+        public static string ConvertObjectsToString(TableAndPlace table)         
+        {   
+            string tablesToString = ($"{table.TableNr}, {table.NominalAndAvailiblePlaces.Keys.First()}, {table.NominalAndAvailiblePlaces.Values.First()}, {table.IsAvailible}");
+            return tablesToString;
+        }
+        
 
 
         // konstruktoriai, savybes

@@ -27,6 +27,14 @@ namespace RestoranOOPonNet6.Models
             return newDish;
         }
 
+/*        public static string ConvertObjectsToString(Аssortiment assortiment)
+        {
+            //public Dish(string name, double price, string description) : base(name, price, description)
+            string assotrimentToString = ($"{assortiment.Name}, {assortiment.Price}, {assortiment.Description}, {assortiment.Kind},  ");
+            return
+
+
+        }*/
 
     }
 }
