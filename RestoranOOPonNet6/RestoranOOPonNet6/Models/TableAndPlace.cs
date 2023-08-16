@@ -135,12 +135,81 @@ namespace RestoranOOPonNet6.Models
                 
             }
         }
+
         public static string ConvertObjectsToString(TableAndPlace table)         
         {   
             string tablesToString = ($"{table.TableNr}, {table.NominalAndAvailiblePlaces.Keys.First()}, {table.NominalAndAvailiblePlaces.Values.First()}, {table.IsAvailible}");
             return tablesToString;
         }
-        
+
+        public void ReadFromCSV()
+        {
+            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            using (StreamReader sr = new StreamReader(tableFilePath))
+            {
+                string line;
+                int currentLine = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] lineValues = line.Split(',');
+                    if (lineValues.Length == 4) 
+                    {
+                        int tableNr = int.Parse(lineValues[0].Trim());
+                        int nominalPlaces = int.Parse(lineValues[1].Trim());
+                        int availablePlaces = int.Parse(lineValues[2].Trim());
+                        bool isAvailable = bool.Parse(lineValues[3].Trim());
+                        ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable);
+                    }
+                    else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
+                }
+            }
+        }
+
+
+
+        public static TableAndPlace ConvertLineToTableFromFile(int inputTableNr, int nominalPlaces, int availiblePlaces, bool isAvailible)
+        {
+
+            var table = new TableAndPlace();
+            var createdTable = new TableAndPlace();
+                createdTable = new TableAndPlace(inputTableNr, new Dictionary<int, int> { { nominalPlaces, availiblePlaces }}, isAvailible);
+
+            table.UpdateAllTabels(createdTable);
+            table.UpdateCurrentAvailibleTablesHasPlaces(inputTableNr, availiblePlaces);
+
+            return createdTable;
+        }
+
+        public static void FilterTablesByFreePlaces(int neededPlace)
+        {
+            int inputChoice = 0;
+            while (inputChoice != 1 && inputChoice != 2) 
+            {
+            Console.WriteLine("Ieškoti tik tarp laisvų stalų (1) / tikrinti visus stalus (2)");
+            bool correctInput = int.TryParse(Console.ReadLine(), out inputChoice);
+                if (inputChoice != 1 && inputChoice != 2) Console.WriteLine("e, dv nesimaivom\n");
+                else Console.WriteLine();
+            }
+            if (inputChoice == 1)
+            {
+                var filteredTables = AllTabels.Where(t => (t.IsAvailible == true && t.NominalAndAvailiblePlaces.Keys.First() >= neededPlace));
+                foreach (var oneTable in filteredTables)
+                {
+                    Console.WriteLine($"Table Nr: {oneTable.TableNr}, sėdimų vietų: {oneTable.NominalAndAvailiblePlaces.Values.First()}");
+                }
+            }
+            else
+            {
+                var filteredTables = AllTabels.Where(t => t.NominalAndAvailiblePlaces.Values.First() >= neededPlace).OrderBy(t =>t.IsAvailible).ThenBy(t => t.NominalAndAvailiblePlaces.Values.First());
+                foreach (var oneTable in filteredTables)
+                { string status;
+                    if (oneTable.IsAvailible == true) status = "NEužimtas";
+                    else status = "Užimtas";
+                    Console.WriteLine($"Table Nr: {oneTable.TableNr}, laisvų vietų: {oneTable.NominalAndAvailiblePlaces.Values.First()}, statusas - {status}");
+                }
+            }
+            Console.WriteLine();
+        }
 
 
         // konstruktoriai, savybes
@@ -151,6 +220,10 @@ namespace RestoranOOPonNet6.Models
             //NominalAndAvailiblePlaces = new Dictionary<int, int> ();
             NominalAndAvailiblePlaces = nominalAndAvailiblePlaces;
             IsAvailible = true;
+        }
+        public TableAndPlace(int tableNr, Dictionary<int, int> nominalAndAvailiblePlaces, bool isAvailible) : this(tableNr, nominalAndAvailiblePlaces)
+        {
+            IsAvailible = isAvailible;
         }
         public int TableNr { get; set; }
         public Dictionary<int, int> NominalAndAvailiblePlaces { get; set; } = new Dictionary<int, int>();

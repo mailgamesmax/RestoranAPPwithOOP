@@ -25,7 +25,10 @@ namespace RestoranOOPonNet6
 
             // stalu kurimo testas
             TableAndPlace tableAndPlace = new TableAndPlace();
-            tableAndPlace.CreateNewTable();
+            
+            tableAndPlace.ReadFromCSV();
+            TableAndPlace.FilterTablesByFreePlaces(3);
+            //tableAndPlace.CreateNewTable();
             tableAndPlace.ShowAllTablesInfo();
 
         }
