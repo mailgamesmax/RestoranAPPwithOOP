@@ -35,13 +35,15 @@ namespace RestoranOOPonNet6
             tableAndPlace.ImportAllFromCSV();
             //TableAndPlace.FilterTablesByFreePlaces(3);
             //tableAndPlace.CreateNewTable();
-            tableAndPlace.ShowAllTablesInfo();
-            //tableAndPlace.SelectActualTablesFromCSV();
+            tableAndPlace.ShowTableInfo(TableAndPlace.AllTabels);
+            tableAndPlace.SelectActualTablesFromCSV();
             /*            string t = "False";
                         Console.WriteLine("enter or True");
                         string inputAvailibleStatus = Console.ReadLine();
                         bool isAvailable = string.IsNullOrEmpty(inputAvailibleStatus) ? bool.Parse(t) : bool.Parse(inputAvailibleStatus);
                         Console.WriteLine(isAvailable);*/
+
+            //tableAndPlace.SelectByTableNrFromFile("4");
         }
     }
 }

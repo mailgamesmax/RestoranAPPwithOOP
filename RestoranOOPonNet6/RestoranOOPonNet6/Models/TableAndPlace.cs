@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -136,6 +137,8 @@ namespace RestoranOOPonNet6.Models
             }
         }
 
+
+
         public static string ConvertObjectsToString(TableAndPlace table)         
         {   
             string tablesToString = ($"{table.TableNr}, {table.NominalAndAvailiblePlaces.Keys.First()}, {table.NominalAndAvailiblePlaces.Values.First()}, {table.IsAvailible}");
@@ -184,32 +187,39 @@ namespace RestoranOOPonNet6.Models
             //return createdTable;
         }
 
-        public void InputTableFilterCriteria(out string inputTableNr, out string inputNominalPlaces, out string inputActualPlaces, out string inputAvailibleStatus)
-        {
-            Console.WriteLine("*PASTABA: jeigu kriterijus neaktualus, tiesiog spauskite ENTER. Nepasirinkus nieko - bus pateikta pilna stalų ataskaita.\n");
-            Console.Write("Stalo nr? ");
-            inputTableNr = Console.ReadLine();
-            Console.Write("Nominalus vietų sk? ");
-            inputNominalPlaces = Console.ReadLine();
-            Console.Write("Faktinis vietų sk.? "); 
-            inputActualPlaces = Console.ReadLine();
-            Console.Write("Užimtumo statusas? (1 - laisvas, 2 - užimtas) "); 
-            string inputTableStatus = Console.ReadLine();
-                if (inputTableStatus == "1") inputAvailibleStatus = "True";            
-                else if (inputTableStatus == "2") inputAvailibleStatus = "False";
-                else inputAvailibleStatus = string.Empty;
-            Console.WriteLine();
-
-            Console.WriteLine($"Aktualūs atrankos kriterijai: \n Stalo nr -> {inputTableNr}, nominalus vietų skaičius -> {inputNominalPlaces}, faktinis vietų skaičius -> {inputActualPlaces}, užimtumo statusas -> {inputAvailibleStatus}");
-            Console.WriteLine();
-        }
         public void SelectActualTablesFromCSV()
         {
-            Console.WriteLine("Įveskite (jei reikia) aktualią info apie stalą: ");
+            Console.WriteLine("Įveskite (jei reikia) aktualią info apie stalą.");
             string inputTableNr, inputNominalPlaces, inputActualPlaces, inputAvailibleStatus;
             InputTableFilterCriteria(out inputTableNr, out inputNominalPlaces, out inputActualPlaces, out inputAvailibleStatus);
+            if (!string.IsNullOrEmpty(inputTableNr)) return;
+            if (!string.IsNullOrEmpty(inputAvailibleStatus)) SelectTableByAvailabilityStatusFromFile(inputAvailibleStatus);
+            if (!string.IsNullOrEmpty(inputNominalPlaces)) 
+            {
+                if (MyFilteredTabels.Count> 0)
+                {
+                    MyFilteredTabels = MyFilteredTabels.Where(t => t.NominalAndAvailiblePlaces.Keys.First() >= int.Parse(inputNominalPlaces)).ToList(); 
+                }
+                else SelectByNominalPlacesFromFile(inputNominalPlaces);
+            }
+            if (!string.IsNullOrEmpty(inputAvailibleStatus))
+            {
+                if (MyFilteredTabels.Count > 0)
+                {
+                    MyFilteredTabels = MyFilteredTabels.Where(t => t.NominalAndAvailiblePlaces.Keys.First() >= int.Parse(inputNominalPlaces)).ToList();
+                }
+                else SelectByAvailablePlacesFromFile(inputActualPlaces);
+            }
 
-            Console.WriteLine("\n check input info inputTableNr, inputNominalPlaces, inputActualPlaces, inputAvailibleStatus;");
+            Console.WriteLine("Rūšiavimo rezultatas --->\n");
+
+           //int tableNr = string.IsNullOrEmpty(inputTableNr) ? int.Parse(lineValues[0].Trim()) : int.Parse(inputTableNr); // pvz isiminimui 
+
+            ShowTableInfo(MyFilteredTabels);
+        }
+
+        public void SelectTableByAvailabilityStatusFromFile(string inputAvailibleStatus)
+        {
             string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             using (StreamReader sr = new StreamReader(tableFilePath))
             {
@@ -221,16 +231,156 @@ namespace RestoranOOPonNet6.Models
                     if (lineValues.Length == 4)
                     {
                         var createdTable = new TableAndPlace();
-                        int tableNr = string.IsNullOrEmpty(inputTableNr) ? int.Parse(lineValues[0].Trim()) : int.Parse(inputTableNr);
-                        int nominalPlaces = string.IsNullOrEmpty(inputNominalPlaces) ? int.Parse(lineValues[1].Trim()) : int.Parse(inputNominalPlaces);
-                        int availablePlaces = string.IsNullOrEmpty(inputActualPlaces) ? int.Parse(lineValues[2]) : int.Parse(inputActualPlaces);
-                        bool isAvailable = string.IsNullOrEmpty(inputAvailibleStatus) ? bool.Parse(lineValues[3]) : bool.Parse(inputAvailibleStatus);
-                        
-                        ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+                        if (bool.Parse(lineValues[3].Trim()) == bool.Parse(inputAvailibleStatus))
+                        {
+                            int tableNr = int.Parse(lineValues[0].Trim());
+                            int nominalPlaces = int.Parse(lineValues[1].Trim());
+                            int availablePlaces = int.Parse(lineValues[2]);
+                            bool isAvailable = bool.Parse(lineValues[3]);
+                            ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+                            MyFilteredTabels.Add(createdTable);
+                        }
                     }
                     else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
                 }
             }
+        }
+
+        public void SelectByAvailablePlacesFromFile(string inputActualPlaces)
+        {
+            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            using (StreamReader sr = new StreamReader(tableFilePath))
+            {
+                string line;
+                int currentLine = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] lineValues = line.Split(',');
+                    if (lineValues.Length == 4)
+                    {
+                        var createdTable = new TableAndPlace();
+                        if (int.Parse(lineValues[1].Trim()) >= int.Parse(inputActualPlaces))
+                        {
+                            int tableNr = int.Parse(lineValues[0].Trim());
+                            int nominalPlaces = int.Parse(lineValues[1].Trim());
+                            int availablePlaces = int.Parse(lineValues[2]);
+                            bool isAvailable = bool.Parse(lineValues[3]);
+                            ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+                            MyFilteredTabels.Add(createdTable);
+                        }
+                    }
+                    else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
+                }
+            }
+        }
+
+        public void SelectByNominalPlacesFromFile(string inputNominalPlaces)
+        {
+            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            using (StreamReader sr = new StreamReader(tableFilePath))
+            {
+                string line;
+                int currentLine = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] lineValues = line.Split(',');
+                    if (lineValues.Length == 4)
+                    {
+                        var createdTable = new TableAndPlace();
+                        if (int.Parse(lineValues[1].Trim()) >= int.Parse(inputNominalPlaces))
+                        {
+                            int tableNr = int.Parse(lineValues[0].Trim());
+                            int nominalPlaces = int.Parse(lineValues[1].Trim());
+                            int availablePlaces = int.Parse(lineValues[2]);
+                            bool isAvailable = bool.Parse(lineValues[3]);
+                            ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+                            MyFilteredTabels.Add(createdTable);
+                        }
+                    }
+                    else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
+                }
+            }
+        }
+
+        public void SelectByTableNrFromFile(string inputTableNr)
+        {
+            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            using (StreamReader sr = new StreamReader(tableFilePath))
+            {
+                string line;
+                int currentLine = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] lineValues = line.Split(',');
+                    if (lineValues.Length == 4)
+                    {
+                        var createdTable = new TableAndPlace();
+                        if (int.Parse(lineValues[0].Trim()) == int.Parse(inputTableNr))
+                        {
+                        int tableNr = int.Parse(lineValues[0].Trim());
+                        int nominalPlaces = int.Parse(lineValues[1].Trim());
+                        int availablePlaces = int.Parse(lineValues[2]);
+                        bool isAvailable = bool.Parse(lineValues[3]);
+                        ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+                        MyFilteredTabels.Add(createdTable);
+                        }                        
+                    }
+                    else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
+                }
+            }
+
+            ShowTableInfo(MyFilteredTabels);
+        }
+
+
+        public void InputTableFilterCriteria(out string inputTableNr, out string inputNominalPlaces, out string inputActualPlaces, out string inputAvailibleStatus)
+        {
+            Console.WriteLine("*PASTABA: jeigu kriterijus neaktualus, tiesiog spauskite ENTER.\n");
+            Console.Write("Stalo nr? ");
+            inputTableNr = Console.ReadLine();
+            if (!string.IsNullOrEmpty(inputTableNr))
+            {
+                inputNominalPlaces = inputActualPlaces = inputAvailibleStatus = "";
+                SelectByTableNrFromFile(inputTableNr);
+                return;
+
+            }
+            Console.Write("Nominalus vietų sk? ");
+            inputNominalPlaces = Console.ReadLine();
+            Console.Write("Faktinis vietų sk.? ");
+            inputActualPlaces = Console.ReadLine();
+            Console.Write("Užimtumo statusas? (1 - laisvas, 2 - užimtas) ");
+            string inputTableStatus = Console.ReadLine();
+            if (inputTableStatus == "1") inputAvailibleStatus = "True";
+            else if (inputTableStatus == "2") inputAvailibleStatus = "False";
+            else inputAvailibleStatus = string.Empty;
+            Console.WriteLine();
+
+            Console.WriteLine($"Aktualūs atrankos kriterijai: \n Stalo nr -> {inputTableNr}, nominalus vietų skaičius -> {inputNominalPlaces}, faktinis vietų skaičius -> {inputActualPlaces}, užimtumo statusas -> {inputAvailibleStatus}");
+            Console.WriteLine();
+        }
+
+        public void CollectSelectedTables(TableAndPlace tableAndPlace)
+        {
+            MyFilteredTabels.Add(tableAndPlace);
+        }
+
+        public void ShowTableInfo(List<TableAndPlace> anyTablesList)
+        {
+
+            Console.WriteLine("foreach method........");
+
+            if (anyTablesList.Count>0) 
+            {            
+                foreach (var table in anyTablesList)
+                {
+                    string tableAvailibilty;
+                    if (table.IsAvailible) { tableAvailibilty = "neužimtas"; }
+                    else { tableAvailibilty = "užimtas"; }
+                    Console.WriteLine($"-> stalo nr {table.TableNr}, {tableAvailibilty}, viso vietų/liko laisvų vietų - {table.NominalAndAvailiblePlaces.Keys.First()}/ {table.NominalAndAvailiblePlaces.Values.First()}");
+                }
+            }
+            else Console.WriteLine("sorry budy, nothing");
         }
 
         public static void FilterTablesByFreePlaces(int neededPlace)
@@ -283,6 +433,7 @@ namespace RestoranOOPonNet6.Models
         public bool IsAvailible { get; set; }
         public static Dictionary<int, int> CurrentAvailibleTablesHasPlaces { get; set; } = new Dictionary<int, int>();
         
+        public static List<TableAndPlace> MyFilteredTabels = new List<TableAndPlace>();
         //public static Dictionary<int, Dictionary<int, int>> AllTabels = new Dictionary<int, Dictionary<int, int>>(); //maybe
         public static List<TableAndPlace> AllTabels = new List<TableAndPlace>();
         
