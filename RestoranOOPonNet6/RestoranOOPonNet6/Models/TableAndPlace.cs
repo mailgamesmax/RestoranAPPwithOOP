@@ -19,15 +19,17 @@ namespace RestoranOOPonNet6.Models
             var createdTable = new TableAndPlace();
             do
             {
+                ImportAllFromCSV(); //nebūtina, bet įvertinau, kaip patikimiausią būdą išvengti dubliavimosi
                 CheckForLastTablesNr();
                 CheckMissedTableNr();
                 InputNewTableData(ref inputTableNr, ref inputAvailiblePlaces);
+                if (inputTableNr == 0) break;
                 Console.WriteLine("creating.........\n");
 
                 createdTable = new TableAndPlace(inputTableNr, new Dictionary<int, int> { { inputAvailiblePlaces, inputAvailiblePlaces } });
 
                 UpdateAllTabels(createdTable);
-                UpdateCurrentAvailibleTablesHasPlaces(inputTableNr, inputAvailiblePlaces);
+                //UpdateCurrentAvailibleTablesHasPlaces(inputTableNr, inputAvailiblePlaces);
                 Console.WriteLine($"sukurto stalo nr: {createdTable.TableNr}, nominualus/prieinamas vietų sk: {createdTable.NominalAndAvailiblePlaces.Keys.First()} / {createdTable.NominalAndAvailiblePlaces.Values.First()}");
 
                 RecToCSV(createdTable);
@@ -73,8 +75,9 @@ namespace RestoranOOPonNet6.Models
 
             do
             {
-                Console.Write("Priskirkite naujam stalui nr: ");
+                Console.Write("Priskirkite naujam stalui nr (0 - norint išeiti): ");                
                 ConvertedToIntTableNr = int.TryParse(Console.ReadLine(), out inputTableNr);
+                if (inputTableNr == 0) return;
                 int inputedNr = inputTableNr;
                 Console.Write("Kiek vietų turės naujas stalas? ");
                 ConvertedToIntPlacesQ = int.TryParse(Console.ReadLine(), out inputAvailiblePlaces);
@@ -99,17 +102,21 @@ namespace RestoranOOPonNet6.Models
             Console.WriteLine("Bendras stalų sąrašas atnaujintas.");
         }
 
-        public void UpdateCurrentAvailibleTablesHasPlaces(int tableNr, int availibleQ)
+        /*public void UpdateCurrentAvailibleTablesHasPlaces(int tableNr, int availibleQ)
         {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"{tableNr}, {availibleQ}");
+                        Console.ResetColor();
+
             if (CurrentAvailibleTablesHasPlaces.TryAdd(tableNr, availibleQ))
-            Console.WriteLine($"Laisų vietų skaičius prie stalo {tableNr} - atnaujintas.");
+            Console.WriteLine($"Laisų vietų skaičius prie {tableNr} stalo  - atnaujintas.");
             else if (CurrentAvailibleTablesHasPlaces.ContainsKey(tableNr)) 
             {
                 CurrentAvailibleTablesHasPlaces[tableNr] = availibleQ;
-                Console.WriteLine($"Laisų vietų skaičius stalo {tableNr} - pakeistas.");
+                Console.WriteLine($"Laisų vietų skaičius {tableNr} stalo  - pakeistas.");
             }
             else { Console.WriteLine($"Nenumatyta klaida - nepavyko atnaujinti {tableNr} stalo laisvų vietų skaičiaus."); }
-        }
+        }*/
         
         public void ShowAllTablesInfo()
         {
@@ -132,8 +139,7 @@ namespace RestoranOOPonNet6.Models
             using (StreamWriter sw = new StreamWriter(tableFilePath, true))
             {
                     string line = ConvertObjectsToString(table);
-                    sw.WriteLine(line); 
-                
+                    sw.WriteLine(line);                 
             }
         }
 
@@ -148,38 +154,112 @@ namespace RestoranOOPonNet6.Models
         public void ImportAllFromCSV()
         {
             string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
-            using (StreamReader sr = new StreamReader(tableFilePath))
+            if(IsFileAvailableToChange(tableFilePath))
             {
-                string line;
-                int currentLine = 0;
-                while ((line = sr.ReadLine()) != null)
+                using (StreamReader sr = new StreamReader(tableFilePath))
                 {
-                    string[] lineValues = line.Split(',');
-                    if (lineValues.Length == 4) 
+                    string line;
+                    int currentLine = 0;
+                    while ((line = sr.ReadLine()) != null)
                     {
-                        var createdTable = new TableAndPlace();
+                        string[] lineValues = line.Split(',');
+                        if (lineValues.Length == 4)
+                        {
+                            var createdTable = new TableAndPlace();
 
                         int tableNr = int.Parse(lineValues[0].Trim());
                         int nominalPlaces = int.Parse(lineValues[1].Trim());
                         int availablePlaces = int.Parse(lineValues[2].Trim());
                         bool isAvailable = bool.Parse(lineValues[3].Trim());
-                        ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+
+                            //control
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.WriteLine($"nuskaitytos reiksmes {tableNr}, {nominalPlaces}, {availablePlaces}, {isAvailable}");
+                                    Console.ResetColor();
+
+
+                            ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
                         UpdateAllTabels(createdTable);
-                        UpdateCurrentAvailibleTablesHasPlaces(nominalPlaces, availablePlaces);
+                        //UpdateCurrentAvailibleTablesHasPlaces(nominalPlaces, availablePlaces);
                     }
-                    else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
+                        else 
+                        {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); 
+                        Console.ResetColor();
+                        }
+                    }
                 }
+            }
+            else 
+            {
+                Console.WriteLine("\t<<< duomenų importas neįvyko >>>\n");
+                return;
             }
         }
 
+        public void RemoveTableFromCSV(int actualTable)
+        {
+            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            if (IsFileAvailableToChange(tableFilePath))
+            {
+                string temporaryTableFilePath = Path.Combine(currentDirectory, "tempTables.csv");
+                using (StreamReader sr = new StreamReader(tableFilePath))
+                using (StreamWriter sw = new StreamWriter(temporaryTableFilePath))
+                {
+                    string line;
+                    int currentLine = 0;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] lineValues = line.Split(',');
+                        if (lineValues.Length == 4)
+                        {
+                            int tableNr = int.Parse(lineValues[0].Trim());
+                            if (tableNr != actualTable) 
+                            {
+                                sw.WriteLine(line);
+                            }
+                            //var createdTable = new TableAndPlace();
+
+/*                            int nominalPlaces = int.Parse(lineValues[1].Trim());
+                            int availablePlaces = int.Parse(lineValues[2].Trim());
+                            bool isAvailable = bool.Parse(lineValues[3].Trim());
+*/
+                            //control
 
 
-        public static void ConvertLineToTableFromFile(int inputTableNr, int nominalPlaces, int availiblePlaces, bool isAvailible, out TableAndPlace createdTable)
+
+                            
+                            //UpdateAllTabels(createdTable);
+                            //UpdateCurrentAvailibleTablesHasPlaces(nominalPlaces, availablePlaces);
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis");
+                            Console.ResetColor();
+                        }
+                    }
+                }
+                
+                UpdateFile(tableFilePath, temporaryTableFilePath);
+            }
+            else
+            {
+                Console.WriteLine("\t<<< operacija nesėkminga  >>>\n");
+                return;
+            }
+        }
+
+        public static void ConvertLineToTableFromFile(int tableNr, int nominalPlaces, int availablePlaces, bool isAvailable, out TableAndPlace createdTable)
         {
 
-         //   var table = new TableAndPlace();
-           // var createdTable = new TableAndPlace();
-                createdTable = new TableAndPlace(inputTableNr, new Dictionary<int, int> { { nominalPlaces, availiblePlaces }}, isAvailible);
+            //   var table = new TableAndPlace();
+            // var createdTable = new TableAndPlace();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"kuriamas objektas {tableNr}, {nominalPlaces}, {availablePlaces}, {isAvailable}");
+                        Console.ResetColor();
+            createdTable = new TableAndPlace(tableNr, new Dictionary<int, int> { { nominalPlaces, availablePlaces } }, isAvailable);
 
 /*            table.UpdateAllTabels(createdTable);
             table.UpdateCurrentAvailibleTablesHasPlaces(inputTableNr, availiblePlaces);
@@ -431,7 +511,7 @@ namespace RestoranOOPonNet6.Models
         public int TableNr { get; set; }
         public Dictionary<int, int> NominalAndAvailiblePlaces { get; set; } = new Dictionary<int, int>();
         public bool IsAvailible { get; set; }
-        public static Dictionary<int, int> CurrentAvailibleTablesHasPlaces { get; set; } = new Dictionary<int, int>();
+        //public static Dictionary<int, int> CurrentAvailibleTablesHasPlaces { get; set; } = new Dictionary<int, int>();
         
         public static List<TableAndPlace> MyFilteredTabels = new List<TableAndPlace>();
         //public static Dictionary<int, Dictionary<int, int>> AllTabels = new Dictionary<int, Dictionary<int, int>>(); //maybe
