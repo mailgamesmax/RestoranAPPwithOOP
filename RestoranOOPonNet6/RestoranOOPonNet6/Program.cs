@@ -35,7 +35,8 @@ namespace RestoranOOPonNet6
             tableAndPlace.ImportAllFromCSV();
             //TableAndPlace.FilterTablesByFreePlaces(3);
             //tableAndPlace.CreateNewTable();
-            tableAndPlace.RemoveTableFromCSV(0);
+            //tableAndPlace.RemoveTableFromCSV(0);
+            //tableAndPlace.OcupideTableInCSV(2);
             tableAndPlace.ShowTableInfo(TableAndPlace.AllTabels);
             //tableAndPlace.SelectActualTablesFromCSV();
             /*            string t = "False";

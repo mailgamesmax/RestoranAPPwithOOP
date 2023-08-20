@@ -20,7 +20,7 @@ namespace RestoranOOPonNet6.Models
             do
             {
                 ImportAllFromCSV(); //nebūtina, bet įvertinau, kaip patikimiausią būdą išvengti dubliavimosi
-                CheckForLastTablesNr();
+                CheckForMaxTablesNr();
                 CheckMissedTableNr();
                 InputNewTableData(ref inputTableNr, ref inputAvailiblePlaces);
                 if (inputTableNr == 0) break;
@@ -42,7 +42,7 @@ namespace RestoranOOPonNet6.Models
             return createdTable; 
         }
 
-        public void CheckForLastTablesNr()
+        public void CheckForMaxTablesNr()
         {
             int currentLargestTableNr = 0;
             if (AllTabels.Count > 0)
@@ -102,25 +102,42 @@ namespace RestoranOOPonNet6.Models
             Console.WriteLine("Bendras stalų sąrašas atnaujintas.");
         }
 
-        /*public void UpdateCurrentAvailibleTablesHasPlaces(int tableNr, int availibleQ)
+        public void OcupideTableInCSV(int actualTable) 
         {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine($"{tableNr}, {availibleQ}");
-                        Console.ResetColor();
+            //public void RemoveTableFromCSV(int actualTable)            
+            int placeNeededQ = 2;
+            bool isTableAvailible = true;
 
-            if (CurrentAvailibleTablesHasPlaces.TryAdd(tableNr, availibleQ))
-            Console.WriteLine($"Laisų vietų skaičius prie {tableNr} stalo  - atnaujintas.");
-            else if (CurrentAvailibleTablesHasPlaces.ContainsKey(tableNr)) 
+            var selectedTable = AllTabels.FirstOrDefault(table => table.TableNr == actualTable);
+            if (selectedTable.IsAvailible == true) 
             {
-                CurrentAvailibleTablesHasPlaces[tableNr] = availibleQ;
-                Console.WriteLine($"Laisų vietų skaičius {tableNr} stalo  - pakeistas.");
+                selectedTable.NominalAndAvailiblePlaces[selectedTable.NominalAndAvailiblePlaces.Values.First()] -= placeNeededQ;
+                Console.WriteLine($"prie {actualTable} stalo liko laisvų vietų: {selectedTable.NominalAndAvailiblePlaces.Values.First()}");
+                UpdateTablesToCSV();
             }
-            else { Console.WriteLine($"Nenumatyta klaida - nepavyko atnaujinti {tableNr} stalo laisvų vietų skaičiaus."); }
-        }*/
-        
+            else
+            { Console.WriteLine($"{actualTable} stalas užimtas."); }
+        }
+
+        public void UpdateTablesToCSV()
+        {
+            Console.WriteLine("foreach method... - AllTables perkėlimas į CSV po pakeitimų "); //kontrolei
+
+            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            if (IsFileAvailableToChange(tableFilePath))
+            {            
+                File.Delete(tableFilePath);
+                foreach (var table in AllTabels)
+                {
+                    RecToCSV(table);                
+                }
+            }
+            else Console.WriteLine("<<< operacija nesėkminga >>>");
+        }
+
+
         public void ShowAllTablesInfo()
         {
-
             Console.WriteLine("foreach method... - visi stalai ");
             foreach (var table in AllTabels)
             {
@@ -129,7 +146,6 @@ namespace RestoranOOPonNet6.Models
                 else { tableAvailibilty = "užimtas"; }
                 Console.WriteLine($"-> stalo nr {table.TableNr}, {tableAvailibilty}, laisvų vietų - {table.NominalAndAvailiblePlaces.Values.First()}");
             }
-
         }
 
         public static void RecToCSV(TableAndPlace table)
@@ -142,8 +158,6 @@ namespace RestoranOOPonNet6.Models
                     sw.WriteLine(line);                 
             }
         }
-
-
 
         public static string ConvertObjectsToString(TableAndPlace table)         
         {   
@@ -200,6 +214,7 @@ namespace RestoranOOPonNet6.Models
 
         public void RemoveTableFromCSV(int actualTable)
         {
+            Console.WriteLine("stalo šalinimas......");
             string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             if (IsFileAvailableToChange(tableFilePath))
             {
@@ -225,11 +240,7 @@ namespace RestoranOOPonNet6.Models
                             int availablePlaces = int.Parse(lineValues[2].Trim());
                             bool isAvailable = bool.Parse(lineValues[3].Trim());
 */
-                            //control
-
-
-
-                            
+                            //control                          
                             //UpdateAllTabels(createdTable);
                             //UpdateCurrentAvailibleTablesHasPlaces(nominalPlaces, availablePlaces);
                         }
@@ -267,7 +278,7 @@ namespace RestoranOOPonNet6.Models
             //return createdTable;
         }
 
-        public void SelectActualTablesFromCSV()
+        public void FilterActualTablesFromCSV()
         {
             Console.WriteLine("Įveskite (jei reikia) aktualią info apie stalą.");
             string inputTableNr, inputNominalPlaces, inputActualPlaces, inputAvailibleStatus;
@@ -463,36 +474,37 @@ namespace RestoranOOPonNet6.Models
             else Console.WriteLine("sorry budy, nothing");
         }
 
-        public static void FilterTablesByFreePlaces(int neededPlace)
-        {
-            int inputChoice = 0;
-            while (inputChoice != 1 && inputChoice != 2) 
-            {
-            Console.WriteLine("Ieškoti tik tarp laisvų stalų (1) / tikrinti visus stalus (2)");
-            bool correctInput = int.TryParse(Console.ReadLine(), out inputChoice);
-                if (inputChoice != 1 && inputChoice != 2) Console.WriteLine("e, dv nesimaivom\n");
-                else Console.WriteLine();
-            }
-            if (inputChoice == 1)
-            {
-                var filteredTables = AllTabels.Where(t => (t.IsAvailible == true && t.NominalAndAvailiblePlaces.Keys.First() >= neededPlace));
-                foreach (var oneTable in filteredTables)
+        // is dalies dubliuojasi su filtravimu pagal visus kriterijus
+        /*        public static void FilterTablesByFreePlaces(int neededPlace)
                 {
-                    Console.WriteLine($"Table Nr: {oneTable.TableNr}, sėdimų vietų: {oneTable.NominalAndAvailiblePlaces.Values.First()}");
-                }
-            }
-            else
-            {
-                var filteredTables = AllTabels.Where(t => t.NominalAndAvailiblePlaces.Values.First() >= neededPlace).OrderBy(t =>t.IsAvailible).ThenBy(t => t.NominalAndAvailiblePlaces.Values.First());
-                foreach (var oneTable in filteredTables)
-                { string status;
-                    if (oneTable.IsAvailible == true) status = "NEužimtas";
-                    else status = "Užimtas";
-                    Console.WriteLine($"Table Nr: {oneTable.TableNr}, laisvų vietų: {oneTable.NominalAndAvailiblePlaces.Values.First()}, statusas - {status}");
-                }
-            }
-            Console.WriteLine();
-        }
+                    int inputChoice = 0;
+                    while (inputChoice != 1 && inputChoice != 2) 
+                    {
+                    Console.WriteLine("Ieškoti tik tarp laisvų stalų (1) / tikrinti visus stalus (2)");
+                    bool correctInput = int.TryParse(Console.ReadLine(), out inputChoice);
+                        if (inputChoice != 1 && inputChoice != 2) Console.WriteLine("e, dv nesimaivom\n");
+                        else Console.WriteLine();
+                    }
+                    if (inputChoice == 1)
+                    {
+                        var filteredTables = AllTabels.Where(t => (t.IsAvailible == true && t.NominalAndAvailiblePlaces.Keys.First() >= neededPlace));
+                        foreach (var oneTable in filteredTables)
+                        {
+                            Console.WriteLine($"Table Nr: {oneTable.TableNr}, sėdimų vietų: {oneTable.NominalAndAvailiblePlaces.Values.First()}");
+                        }
+                    }
+                    else
+                    {
+                        var filteredTables = AllTabels.Where(t => t.NominalAndAvailiblePlaces.Values.First() >= neededPlace).OrderBy(t =>t.IsAvailible).ThenBy(t => t.NominalAndAvailiblePlaces.Values.First());
+                        foreach (var oneTable in filteredTables)
+                        { string status;
+                            if (oneTable.IsAvailible == true) status = "NEužimtas";
+                            else status = "Užimtas";
+                            Console.WriteLine($"Table Nr: {oneTable.TableNr}, laisvų vietų: {oneTable.NominalAndAvailiblePlaces.Values.First()}, statusas - {status}");
+                        }
+                    }
+                    Console.WriteLine();
+                }*/ // is dalies dubliuojasi su filtravimu pagal visus kriterijus END
 
 
         // konstruktoriai, savybes
