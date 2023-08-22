@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace RestoranOOPonNet6.Models
 {
-    internal class TableAndPlace : CommonFunctions //, ISimilarFuntions
+    internal class TableAndPlace : CommonFunctions, ISimilarFuntions
     {
         public TableAndPlace CreateNewTable() 
         {
@@ -17,9 +17,9 @@ namespace RestoranOOPonNet6.Models
             int inputAvailiblePlaces = 0;
             string? repeatAction;
             var createdTable = new TableAndPlace();
+                ImportAllFromCSV(); //nebūtina, bet įvertinau, kaip patikimiausią būdą išvengti dubliavimosi
             do
             {
-                ImportAllFromCSV(); //nebūtina, bet įvertinau, kaip patikimiausią būdą išvengti dubliavimosi
                 CheckForMaxTablesNr();
                 CheckMissedTableNr();
                 InputNewTableData(ref inputTableNr, ref inputAvailiblePlaces);
@@ -34,8 +34,7 @@ namespace RestoranOOPonNet6.Models
 
                 RecToCSV(createdTable);
 
-                Console.WriteLine();
-                Console.Write("priėti dar vieną stalą? (+) ");
+                Console.Write("\npriėti dar vieną stalą? (+) ");
                 repeatAction = Console.ReadLine();
             }
             while (repeatAction == "+");            
@@ -47,7 +46,8 @@ namespace RestoranOOPonNet6.Models
             int currentLargestTableNr = 0;
             if (AllTabels.Count > 0)
             {
-                currentLargestTableNr = currentLargestTableNr = AllTabels.Max(t => t.TableNr);
+                //currentLargestTableNr = currentLargestTableNr = AllTabels.Max(t => t.TableNr);
+                currentLargestTableNr = AllTabels.Max(t => t.TableNr);
                 Console.Write("esamas didžiausas turimų stalų nr -> " + currentLargestTableNr + ". ");
             }
             else { Console.WriteLine("Nėra apskaitomų stalų."); }
@@ -102,21 +102,29 @@ namespace RestoranOOPonNet6.Models
             Console.WriteLine("Bendras stalų sąrašas atnaujintas.");
         }
 
-        public void OcupideTableInCSV(int actualTable) 
+        public void OcupideTableEverywere(int actualTable, int placeNeededQ) 
         {
-            //public void RemoveTableFromCSV(int actualTable)            
-            int placeNeededQ = 2;
-            bool isTableAvailible = true;
+            //public void RemoveTableFromCSV(int actualTable)                        
 
             var selectedTable = AllTabels.FirstOrDefault(table => table.TableNr == actualTable);
             if (selectedTable.IsAvailible == true) 
             {
-                selectedTable.NominalAndAvailiblePlaces[selectedTable.NominalAndAvailiblePlaces.Values.First()] -= placeNeededQ;
+                selectedTable.NominalAndAvailiblePlaces[selectedTable.NominalAndAvailiblePlaces.Keys.First()] -= placeNeededQ;
                 Console.WriteLine($"prie {actualTable} stalo liko laisvų vietų: {selectedTable.NominalAndAvailiblePlaces.Values.First()}");
+                selectedTable.IsAvailible = false;
                 UpdateTablesToCSV();
             }
             else
             { Console.WriteLine($"{actualTable} stalas užimtas."); }
+        }
+
+        public void DeOcupideTableEverywere(int actualTable)
+        {
+            var selectedTable = AllTabels.FirstOrDefault(table => table.TableNr == actualTable);
+            selectedTable.NominalAndAvailiblePlaces[selectedTable.NominalAndAvailiblePlaces.Keys.First()] = selectedTable.NominalAndAvailiblePlaces.Keys.First();
+                Console.WriteLine($"prie {actualTable} stalo liko laisvų vietų: {selectedTable.NominalAndAvailiblePlaces.Values.First()}");
+                selectedTable.IsAvailible = true;
+                UpdateTablesToCSV();
         }
 
         public void UpdateTablesToCSV()
@@ -132,7 +140,7 @@ namespace RestoranOOPonNet6.Models
                     RecToCSV(table);                
                 }
             }
-            else Console.WriteLine("<<< operacija nesėkminga >>>");
+            else PrintSomethingWrong();
         }
 
 
@@ -154,12 +162,12 @@ namespace RestoranOOPonNet6.Models
             string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             using (StreamWriter sw = new StreamWriter(tableFilePath, true))
             {
-                    string line = ConvertObjectsToString(table);
+                    string line = ConvertTablesToString(table);
                     sw.WriteLine(line);                 
             }
         }
 
-        public static string ConvertObjectsToString(TableAndPlace table)         
+        public static string ConvertTablesToString(TableAndPlace table)         
         {   
             string tablesToString = ($"{table.TableNr}, {table.NominalAndAvailiblePlaces.Keys.First()}, {table.NominalAndAvailiblePlaces.Values.First()}, {table.IsAvailible}");
             return tablesToString;
@@ -257,7 +265,7 @@ namespace RestoranOOPonNet6.Models
             }
             else
             {
-                Console.WriteLine("\t<<< operacija nesėkminga  >>>\n");
+                PrintSomethingWrong();
                 return;
             }
         }

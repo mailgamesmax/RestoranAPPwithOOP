@@ -1,6 +1,6 @@
 ﻿using RestoranOOPonNet6.Models;
 using System.Reflection;
-using static RestoranOOPonNet6.Models.Аssortiment;
+using static RestoranOOPonNet6.Models.Assortiment;
 
 namespace RestoranOOPonNet6
 {
@@ -10,20 +10,43 @@ namespace RestoranOOPonNet6
             {
                 Console.WriteLine("Hello again my restaurant!!! ;\n");
 
-             string currentDirectory = Directory.GetCurrentDirectory()+"\\myFiles";
+            //string currentDirectory = Directory.GetCurrentDirectory()+"\\myFiles";
             //Console.WriteLine("Esamas folderio kelias: " + currentDirectory);
 
-            
-
-            // asortimento kurimo testas
-            /*            var dish = new Dish();
-                        dish.CreateAssortiment();
-                        dish.CreateAssortiment();
-
-                        dish.ShowFullАssortiment(KindVariables.Patiekalas);*/
 
 
-            // stalu kurimo testas
+            // asortimento valdymas
+            var assortiment = new Assortiment();
+
+            /*            //dishes
+                        var dish = new Dish();
+                        dish.ImportAllFromCSV();
+                        //assortiment.CreateAssortiment();
+                        //dish.NameChanger();
+                        dish.ShowAllDishes();
+
+                        dish.DeleteDish();
+                        dish.ImportAllFromCSV();
+                        dish.ShowAllDishes();
+                        //dishes end*/
+
+            //drinks
+            var drink = new Drink();
+            drink.ImportAllFromCSV();
+            assortiment.CreateAssortiment();
+            drink.NameChanger();
+            drink.ShowAllDrinks();
+
+/*            drink.DeleteDish();
+            drink.ImportAllFromCSV();
+            drink.ShowAllDrinks();*/
+            //drinks end
+
+
+
+
+            // stalu valdymas
+            #region
             TableAndPlace tableAndPlace = new TableAndPlace();
             /*            string inputAvailibleStatus;
                         string inputTableStatus = Console.ReadLine();
@@ -32,12 +55,14 @@ namespace RestoranOOPonNet6
                         else inputAvailibleStatus = string.Empty;
                         Console.WriteLine(inputAvailibleStatus);*/
 
-            tableAndPlace.ImportAllFromCSV();
+            //tableAndPlace.ImportAllFromCSV();
             //TableAndPlace.FilterTablesByFreePlaces(3);
             //tableAndPlace.CreateNewTable();
             //tableAndPlace.RemoveTableFromCSV(0);
-            //tableAndPlace.OcupideTableInCSV(2);
-            tableAndPlace.ShowTableInfo(TableAndPlace.AllTabels);
+            //tableAndPlace.OcupideTableEverywere(1, 1);
+            //tableAndPlace.DeOcupideTableEverywere(1);
+            //
+            //tableAndPlace.ShowTableInfo(TableAndPlace.AllTabels);
             //tableAndPlace.SelectActualTablesFromCSV();
             /*            string t = "False";
                         Console.WriteLine("enter or True");
@@ -46,6 +71,11 @@ namespace RestoranOOPonNet6
                         Console.WriteLine(isAvailable);*/
 
             //tableAndPlace.SelectByTableNrFromFile("4");
+            #endregion
+            //stalu valdymas END
+
+
+
         }
     }
 }

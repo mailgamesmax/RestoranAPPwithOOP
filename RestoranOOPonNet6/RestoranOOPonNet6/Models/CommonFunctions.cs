@@ -31,16 +31,35 @@ namespace RestoranOOPonNet6.Models
             }
         }
 
-
-        public void UpdateFile(string filePath, string temporaryfilePath)
+        public void PrintSomethingWrong() 
         {
-            if (IsFileAvailableToChange(filePath) && IsFileAvailableToChange(temporaryfilePath))
-            {
-                File.Delete(filePath);
-                File.Move(temporaryfilePath, filePath);
-            }
-            else Console.WriteLine("\t Pakeitimai NEišsaugoti");
+            Console.WriteLine("\n\t<<< operacija nepavko >>>\n");
+        }
 
+        public void UpdateFile(string originFilePath, string temporaryfilePath)
+        {
+            if (IsFileAvailableToChange(originFilePath) && IsFileAvailableToChange(temporaryfilePath))
+            {
+                File.Delete(originFilePath);
+                File.Move(temporaryfilePath, originFilePath);
+            }
+            else Console.WriteLine("\t Failų klaida - pakeitimai NEišsaugoti");
+
+        }
+
+        public double ConvertInputToDouble() 
+        {
+            Console.WriteLine("*norint nutraukti operaciją įveskite neigiamą skaičių\n");
+            double result = -1;
+            bool trying = false;
+            while (!trying) 
+            {                
+                string userInput = Console.ReadLine();
+                trying = double.TryParse(userInput, out result);
+                if (result == 0) Console.WriteLine("\tDėmesio - įvesta reikšmė - 0\n");
+                if (result < 0) break; //?
+            }
+            return result;
         }
 
         public CommonFunctions()

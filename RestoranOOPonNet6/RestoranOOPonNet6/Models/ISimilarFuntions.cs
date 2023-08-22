@@ -9,6 +9,8 @@ namespace RestoranOOPonNet6.Models
     internal interface ISimilarFuntions
     {
 
-        string ConvertObjectsToString<T>(T actualClass);
+        //string ConvertObjectsToString<T>(T actualClass);
+
+        public void ImportAllFromCSV();
     }
 }
