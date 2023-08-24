@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestoranOOPonNet6.Models
 {
-    internal class Dish : Assortiment
+    internal class Dish : Assortiment, ISimilarFuntions
     {
 
         public Dish CreateNewDish(string name, double price, string description)
@@ -176,7 +176,7 @@ namespace RestoranOOPonNet6.Models
                             DateTime creationDate = DateTime.Parse(lineValues[5].Trim());
 
                             Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine($"\tnuskaitytos reiksmes -> {kindVariables}, {id}, {name}, {price}, {description}, {creationDate}");
+                            Console.WriteLine($"\tCONTROL nuskaitytos reiksmes -> {kindVariables}, {id}, {name}, {price}, {description}, {creationDate}");
                             Console.ResetColor();
 
                             recoveredDish = ConvertLineToDishFromFile(kindVariables, id, name, price, description, creationDate);
@@ -220,7 +220,7 @@ namespace RestoranOOPonNet6.Models
 
         public void ShowAllDishes()
         {
-            Console.WriteLine("all dishes foreach........");
+            Console.WriteLine("\tCONTROL all dishes foreach........");
             foreach (var dish in AllDishes)
             {
                 Console.WriteLine($"{dish.UniqID} {dish.Kind} \n{dish.Name} - {dish.Price} - {dish.Description} - {dish.CreationDate.ToString("yyyy-MM-dd")}");

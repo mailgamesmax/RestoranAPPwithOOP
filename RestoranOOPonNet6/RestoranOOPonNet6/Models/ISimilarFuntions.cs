@@ -12,5 +12,6 @@ namespace RestoranOOPonNet6.Models
         //string ConvertObjectsToString<T>(T actualClass);
 
         public void ImportAllFromCSV();
+
     }
 }

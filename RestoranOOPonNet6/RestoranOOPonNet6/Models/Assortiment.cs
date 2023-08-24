@@ -121,7 +121,7 @@ namespace RestoranOOPonNet6.Models
         }
 
 
-        public static void AddNewToCSV(Assortiment assortiment, string dishOrDrink)
+        public void AddNewToCSV(Assortiment assortiment, string dishOrDrink)
         {
             string myFilePath = ChooseRightAssortimentFile(dishOrDrink);
             using (StreamWriter sw = new StreamWriter(myFilePath, true, Encoding.UTF8))
@@ -144,7 +144,7 @@ namespace RestoranOOPonNet6.Models
         }*/
 
 
-        public static string ConvertAssortimentToString(Assortiment assortiment)
+        public string ConvertAssortimentToString(Assortiment assortiment)
         {
             {
                 string dishToString = ($"{assortiment.Kind}; {assortiment.UniqID}; {assortiment.Name}; {assortiment.Price}; {assortiment.Description}; {assortiment.CreationDate}");

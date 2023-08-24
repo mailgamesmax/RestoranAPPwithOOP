@@ -8,11 +8,24 @@ namespace RestoranOOPonNet6
     {
             static void Main(string[] args)
             {
-                Console.WriteLine("Hello again my restaurant!!! ;\n");
+                Console.WriteLine("Hello again my restaurant!!!\n");
 
             //string currentDirectory = Directory.GetCurrentDirectory()+"\\myFiles";
             //Console.WriteLine("Esamas folderio kelias: " + currentDirectory);
 
+            //Console.WriteLine(DateTime.Now);
+
+            // order line valdymas
+            var oc = new OrderContent();
+            oc.ImportAllFromCSV();
+
+/*            oc.CreateActiveOrderContent(1, 2, "kaku", 2, 5);
+            oc.CreateActiveOrderContent(2, 3, "kaku", 2, 5);*/
+
+
+            oc.CloseActiveOrderContent();
+
+            //(int table, int orderID, string itemName, double itemPrice, int itemQ)
 
 
             // asortimento valdymas
@@ -30,17 +43,17 @@ namespace RestoranOOPonNet6
                         dish.ShowAllDishes();
                         //dishes end*/
 
-            //drinks
+/*            //drinks
             var drink = new Drink();
             drink.ImportAllFromCSV();
             assortiment.CreateAssortiment();
-            drink.NameChanger();
+            //drink.NameChanger();
             drink.ShowAllDrinks();
 
-/*            drink.DeleteDish();
+            drink.DeleteDish();
             drink.ImportAllFromCSV();
-            drink.ShowAllDrinks();*/
-            //drinks end
+            drink.ShowAllDrinks();
+            //drinks end */
 
 
 

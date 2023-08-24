@@ -131,7 +131,6 @@ namespace RestoranOOPonNet6.Models
         {
             Console.WriteLine("foreach method... - AllTables perkėlimas į CSV po pakeitimų "); //kontrolei
 
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             if (IsFileAvailableToChange(tableFilePath))
             {            
                 File.Delete(tableFilePath);
@@ -158,8 +157,6 @@ namespace RestoranOOPonNet6.Models
 
         public static void RecToCSV(TableAndPlace table)
         {
-            //string tableFilePath = currentDirectory + "Tables.csv";
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             using (StreamWriter sw = new StreamWriter(tableFilePath, true))
             {
                     string line = ConvertTablesToString(table);
@@ -175,7 +172,6 @@ namespace RestoranOOPonNet6.Models
 
         public void ImportAllFromCSV()
         {
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             if(IsFileAvailableToChange(tableFilePath))
             {
                 using (StreamReader sr = new StreamReader(tableFilePath))
@@ -222,11 +218,10 @@ namespace RestoranOOPonNet6.Models
 
         public void RemoveTableFromCSV(int actualTable)
         {
-            Console.WriteLine("stalo šalinimas......");
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+            Console.WriteLine("\tSTALO ŠALINIMAS......");
+
             if (IsFileAvailableToChange(tableFilePath))
             {
-                string temporaryTableFilePath = Path.Combine(currentDirectory, "tempTables.csv");
                 using (StreamReader sr = new StreamReader(tableFilePath))
                 using (StreamWriter sw = new StreamWriter(temporaryTableFilePath))
                 {
@@ -310,7 +305,7 @@ namespace RestoranOOPonNet6.Models
                 else SelectByAvailablePlacesFromFile(inputActualPlaces);
             }
 
-            Console.WriteLine("Rūšiavimo rezultatas --->\n");
+            Console.WriteLine("Filtravimo rezultatas --->\n");
 
            //int tableNr = string.IsNullOrEmpty(inputTableNr) ? int.Parse(lineValues[0].Trim()) : int.Parse(inputTableNr); // pvz isiminimui 
 
@@ -319,7 +314,6 @@ namespace RestoranOOPonNet6.Models
 
         public void SelectTableByAvailabilityStatusFromFile(string inputAvailibleStatus)
         {
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             using (StreamReader sr = new StreamReader(tableFilePath))
             {
                 string line;
@@ -347,7 +341,6 @@ namespace RestoranOOPonNet6.Models
 
         public void SelectByAvailablePlacesFromFile(string inputActualPlaces)
         {
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             using (StreamReader sr = new StreamReader(tableFilePath))
             {
                 string line;
@@ -375,7 +368,6 @@ namespace RestoranOOPonNet6.Models
 
         public void SelectByNominalPlacesFromFile(string inputNominalPlaces)
         {
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             using (StreamReader sr = new StreamReader(tableFilePath))
             {
                 string line;
@@ -403,7 +395,6 @@ namespace RestoranOOPonNet6.Models
 
         public void SelectByTableNrFromFile(string inputTableNr)
         {
-            string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
             using (StreamReader sr = new StreamReader(tableFilePath))
             {
                 string line;
@@ -520,7 +511,6 @@ namespace RestoranOOPonNet6.Models
         public TableAndPlace(int tableNr, Dictionary<int, int> nominalAndAvailiblePlaces)
         {
             TableNr = tableNr;
-            //NominalAndAvailiblePlaces = new Dictionary<int, int> ();
             NominalAndAvailiblePlaces = nominalAndAvailiblePlaces;
             IsAvailible = true;
         }
@@ -531,12 +521,14 @@ namespace RestoranOOPonNet6.Models
         public int TableNr { get; set; }
         public Dictionary<int, int> NominalAndAvailiblePlaces { get; set; } = new Dictionary<int, int>();
         public bool IsAvailible { get; set; }
-        //public static Dictionary<int, int> CurrentAvailibleTablesHasPlaces { get; set; } = new Dictionary<int, int>();
         
         public static List<TableAndPlace> MyFilteredTabels = new List<TableAndPlace>();
-        //public static Dictionary<int, Dictionary<int, int>> AllTabels = new Dictionary<int, Dictionary<int, int>>(); //maybe
+
         public static List<TableAndPlace> AllTabels = new List<TableAndPlace>();
         
         public static List<int> FreeNrForNewTables = new List<int> ();
+        //fieldai
+        public static string tableFilePath = Path.Combine(currentDirectory, "Tables.csv");
+        public static string temporaryTableFilePath = Path.Combine(currentDirectory, "tempTables.csv");
     }
 }

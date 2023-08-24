@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestoranOOPonNet6.Models
 {
-    internal class Drink : Assortiment
+    internal class Drink : Assortiment, ISimilarFuntions
     {
 
         public Drink CreateNewDrink(string name, double price, string description)

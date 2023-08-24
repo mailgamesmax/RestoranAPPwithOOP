@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestoranOOPonNet6.Models
 {
-    internal abstract class CommonFunctions
+    internal class CommonFunctions
     {
         public bool IsFileAvailableToChange(string filePath)
         {
@@ -21,13 +21,28 @@ namespace RestoranOOPonNet6.Models
                 {
                     Console.WriteLine("Failų apdorojimo klaida: " + error.Message);
                     return false;
-
                 }
             }
             else
             {
-                Console.WriteLine("\t<<< nerastas aktualus failas >>>\n");
-                return false;
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"\t<<< nerastas \n{filePath}\nPrograma sukurs trūkstamą failą. >>>\n");
+                    Console.ResetColor();
+
+                try
+                {
+                   using (FileStream fs = File.Create(filePath))
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine("čiki puki");
+                        Console.ResetColor();
+                    return true;
+                }
+                catch (IOException error)
+                {
+                    Console.WriteLine("Failų apdorojimo klaida: " + error.Message);
+                    return false;
+                }
+
             }
         }
 
@@ -68,5 +83,7 @@ namespace RestoranOOPonNet6.Models
         }
 
         public static string currentDirectory; // protected?
+
+
     }
 }
