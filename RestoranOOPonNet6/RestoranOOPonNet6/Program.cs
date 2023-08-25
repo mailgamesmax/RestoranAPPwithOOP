@@ -20,10 +20,10 @@ namespace RestoranOOPonNet6
 
             // asortimento valdymas
             var assortiment = new Assortiment();
-
-            /*            //dishes
                         var dish = new Dish();
                         dish.ImportAllFromCSV();
+
+            /*            //dishes
                         //assortiment.CreateAssortiment();
                         //dish.NameChanger();
                         dish.ShowAllDishes();
@@ -90,9 +90,10 @@ namespace RestoranOOPonNet6
             var order = new OrderSummary();
             order.ImportAllFromCSV();
             //order.CreateOrder(); //reserve table...
-            order.CloseActiveOrder();
+            //order.CloseActiveOrder();
             //order.InputPredataForNewOrder();
-
+            //order.InputDishOrDrink();
+            order.AddItemToOrder();
         }
 
     }

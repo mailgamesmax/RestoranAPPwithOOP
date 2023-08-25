@@ -20,10 +20,120 @@ namespace RestoranOOPonNet6
 
             var newOrederContent = new OrderContent();
             newOrederContent.CreateActiveOrderContent(inputTable, newID);
-     
+
             AddNewToCSV(newOrder, 1);
             AllActiveOrders.Add(newOrder);
         }
+
+        public void AddItemToOrder()
+        {
+            Console.WriteLine("\tCONTROL add item to order\n");
+            
+//            var dish = new Dish();
+            var drink = new Drink();
+            double addItemAndPrice;
+
+            int inputTableNr = InputTableNr();                        
+            var selectedOrder = AllActiveOrders.FirstOrDefault(table => table.Table == inputTableNr);
+            string selectedOrderID = selectedOrder.UniqID;
+    
+            string kindOfItem = InputDishOrDrink();
+            if (kindOfItem == "patiekalas")
+            {
+               AddDishItem(selectedOrder, inputTableNr, selectedOrderID);
+            }
+            else if (kindOfItem == "gerimas") 
+            {
+               AddDishItem(selectedOrder, inputTableNr, selectedOrderID);            
+            }
+            else 
+            {
+                BackToWelcome();
+                return;
+            }
+            SaveToTempOrdersCSV();
+            UpdateFile(ActiveOrdersSummaryFilePath, temporaryOredersFilePath);
+            
+            //if (kindOfItem == "gerimas") AddDrinkItem(inputTableNr, selectedOrderID);
+        }
+
+        public void AddDishItem(OrderSummary selectedOrder, int inputTableNr, string selectedOrderID) 
+        {            
+            var dish = new Dish();
+            var content = new OrderContent();
+            string? repeatAction;
+
+            do 
+            {
+            dish.SearchByName();
+            double addItemAndPrice = content.AddIDishItemToOrder(inputTableNr, selectedOrderID);
+            selectedOrder.TotalPrice += addItemAndPrice;
+                Console.Write("\npridėti kitą? (+) ");
+                repeatAction = Console.ReadLine();
+            }
+            while (repeatAction == "+");
+        }
+
+        public void AddDrinkItem(OrderSummary selectedOrder, int inputTableNr, string selectedOrderID)
+        {
+            var drink = new Drink();
+            var content = new OrderContent();
+            string? repeatAction;
+
+            do
+            {
+                drink.SearchByName();
+                double addItemAndPrice = content.AddIDrinkItemToOrder(inputTableNr, selectedOrderID);
+                selectedOrder.TotalPrice += addItemAndPrice;
+                Console.Write("\npridėti kitą? (+) ");
+                repeatAction = Console.ReadLine();
+            }
+            while (repeatAction == "+");
+        }
+
+        public int InputTableNr()
+        {
+            //string inputChoice;            
+            Console.Write("Užsakymo stalo nr?");
+            int inputTableNr = ConvertInputToIntIfPositive();
+            if (inputTableNr == 0) BackToWelcome();
+            else return inputTableNr;
+
+            PrintSomethingWrong();
+            BackToWelcome();
+            return 0;
+        }
+
+        public string InputDishOrDrink() 
+        {
+            string inputChoice;
+            do
+            {
+                Console.WriteLine("Pridėti patiekalą - 1, pridėti gėrimą - 2, nutraukti įvedimą - 0");
+                inputChoice = Console.ReadLine();
+                //if (inputChoice == "0") return string.Empty;
+            }
+            while (inputChoice != "0" && inputChoice != "1" && inputChoice != "2");
+            if (inputChoice == "1") return "patiekalas";
+            if (inputChoice == "2") return "gerimas";
+            
+            BackToWelcome();
+            return string.Empty;
+        }
+
+/*        public OrderSummary SelectActiveOrderByTable()
+        {
+            var selectedOrder = new OrderSummary();
+            
+            var content = new OrderContent();
+            int actualTableNr = content.CloseActiveOrderContent();
+
+            var table = new TableAndPlace();
+            table.DeOcupideTableEverywere(actualTableNr);
+
+            var selectedOrder = AllActiveOrders.FirstOrDefault(table => table.Table == actualTableNr);
+            return selectedOrder;
+        }*/
 
         public void CloseActiveOrder()
         {

@@ -48,7 +48,7 @@ namespace RestoranOOPonNet6.Models
 
         public void PrintSomethingWrong() 
         {
-            Console.WriteLine("\n\t<<< operacija nepavko >>>\n");
+            Console.WriteLine("\n\t<<< operacija neįvykdyta >>>\n");
         }
 
         public void UpdateFile(string originFilePath, string temporaryfilePath)
@@ -62,21 +62,35 @@ namespace RestoranOOPonNet6.Models
 
         }
 
-        public double ConvertInputToDouble() 
+        public double ConvertInputToDoubleIfPositive() 
         {
-            Console.WriteLine("*norint nutraukti operaciją įveskite neigiamą skaičių\n");
+            Console.WriteLine("*norint nutraukti operaciją įveskite neigiamą skaičių");
             double result = -1;
             bool trying = false;
             while (!trying) 
             {                
                 string userInput = Console.ReadLine();
                 trying = double.TryParse(userInput, out result);
-                if (result == 0) Console.WriteLine("\tDėmesio - įvesta reikšmė - 0\n");
+                if (result == 0) Console.WriteLine("\tDėmesio - įvestas 0 arba netinkama reikšmė\n");
                 if (result < 0) break; //?
             }
             return result;
         }
 
+        public int ConvertInputToIntIfPositive()
+        {
+            Console.WriteLine(" *norint nutraukti operaciją įveskite neigiamą skaičių");
+            int result = -1;
+            bool trying = false;
+            while (!trying)
+            {
+                string userInput = Console.ReadLine();
+                trying = int.TryParse(userInput, out result);
+                if (result == 0) Console.WriteLine("\tDėmesio - įvesta reikšmė - 0\n");
+                if (result < 0) break; //?
+            }
+            return result;
+        }
         public CommonFunctions()
         {            
             currentDirectory = Directory.GetCurrentDirectory() + "\\myFiles";
@@ -84,6 +98,11 @@ namespace RestoranOOPonNet6.Models
 
         public static string currentDirectory; // protected?
 
-
+        public void BackToWelcome() 
+        {
+            PrintSomethingWrong();
+            Console.WriteLine("Hello again my restaurant!!!\n");
+            return;
+        }
     }
 }

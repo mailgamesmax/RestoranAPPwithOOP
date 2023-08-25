@@ -20,6 +20,39 @@ namespace RestoranOOPonNet6
             return newOrderContent.LinePrice;
         }
 
+        public double AddIDishItemToOrder(int table, string orderID)
+        {
+            var dish = new Dish();
+            var addDish = dish.SelectByID();
+            if (addDish == null) return 0; // nepritaikyta klaidingai ivedus neegzistuojanti ID
+            Console.Write("Kiekis? ");            
+            double quantity = ConvertInputToDoubleIfPositive();
+            
+            string name = addDish.Name.ToString();
+            double price = Convert.ToDouble(addDish.Price);                
+
+            var newOrderContent = new OrderContent(table, orderID, name, price, quantity);
+            AddNewToCSV(newOrderContent);
+            AllActiveOrdersContent.Add(newOrderContent);
+            return newOrderContent.LinePrice;
+        }
+
+        public double AddIDrinkItemToOrder(int table, string orderID)
+        {
+            var drink = new Drink();
+            var addDrink = drink.SelectByID();
+            if (addDrink == null) return 0; // nepritaikyta klaidingai ivedus neegzistuojanti ID
+            Console.Write("Kiekis? ");
+            double quantity = ConvertInputToDoubleIfPositive();
+            string name = addDrink.Name.ToString();
+            double price = Convert.ToDouble(addDrink.Price);
+
+            var newOrderContent = new OrderContent(table, orderID, name, price, quantity);
+            AddNewToCSV(newOrderContent);
+            AllActiveOrdersContent.Add(newOrderContent);
+            return newOrderContent.LinePrice;
+        }
+
         public void AddNewToCSV(OrderContent newOrderContent)
         {
             using (StreamWriter sw = new StreamWriter(ActiveOrdersContentsFilePath, true, Encoding.UTF8))

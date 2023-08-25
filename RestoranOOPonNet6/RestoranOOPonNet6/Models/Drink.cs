@@ -102,6 +102,18 @@ namespace RestoranOOPonNet6.Models
             }
         }
 
+        public Drink SelectByID()
+        {
+            Console.Write("gėeimo ID? (0 - norint nutraukt veiksmą) ");
+            int id = int.Parse(Console.ReadLine());
+            if (id == 0) return new Drink();
+            else
+            {
+                var selectedDrink = AllDrinks.FirstOrDefault(i => i.UniqID == id);
+                return selectedDrink;
+            }
+        }
+
         public void InputNewName()
         {
             Console.Write("gėrimo ID? (0 - norint nutraukt veiksmą) ");

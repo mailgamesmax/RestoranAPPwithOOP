@@ -85,9 +85,14 @@ namespace RestoranOOPonNet6.Models
             Console.Write("Įveskite aktualaus patiekalo pavadinimą ar jo fragmentą: ");
             string partOfName = Console.ReadLine();
             var filteredDishes = AllDishes.Where(d => d.Name.Contains(partOfName)).ToList();
-            foreach (var dish in filteredDishes)
+            if (filteredDishes.Count > 0)
+                foreach (var dish in filteredDishes)
+                {
+                    Console.WriteLine($"{dish.UniqID} - {dish.Name} - {dish.Price}e ");
+                }
+            else
             {
-                Console.WriteLine($"{dish.UniqID} - {dish.Name} - {dish.Price}e ");
+                Console.WriteLine("\tAtitikimų nerasta\n");
             }
         }
 
@@ -98,9 +103,34 @@ namespace RestoranOOPonNet6.Models
             if (id == 0) return;
             else
             {
-                var changeThisDish = AllDishes.FirstOrDefault(i => i.UniqID == id);
-                AllDishes.Remove(changeThisDish);
+                var selectedDish = AllDishes.FirstOrDefault(i => i.UniqID == id);
+                AllDishes.Remove(selectedDish);
                 FreeIDForNewDishes.Add(id);
+            }
+        }
+
+        public Dish SelectByID()
+        {
+            Console.Write("patiekalo ID? ");
+            int id = ConvertInputToIntIfPositive();
+            if (id == 0)
+            {
+                BackToWelcome();
+                return new Dish();
+            }
+            else
+            {
+                var selectedDish = AllDishes.FirstOrDefault(i => i.UniqID == id);
+                if (selectedDish != null)
+                {
+                    return selectedDish;
+                }
+                else
+                {
+                    Console.WriteLine("nerastas gėrimas pagal įvestą iD");
+                    BackToWelcome();
+                    return new Dish();
+                }
             }
         }
 
@@ -111,10 +141,10 @@ namespace RestoranOOPonNet6.Models
             if (id == 0) return;
             else
             {
-                var changeThisDish = AllDishes.FirstOrDefault(i => i.UniqID == id);
+                var selectedDish = AllDishes.FirstOrDefault(i => i.UniqID == id);
                 Console.Write("naujas pavadinimas? ");
                 string inputNewName = Console.ReadLine();
-                changeThisDish.Name = inputNewName;
+                selectedDish.Name = inputNewName;
             }
         }
 

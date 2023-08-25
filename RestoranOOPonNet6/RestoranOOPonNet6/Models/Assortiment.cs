@@ -43,7 +43,7 @@ namespace RestoranOOPonNet6.Models
                 if (string.IsNullOrEmpty(inputName)) return;
 
                 Console.Write("Įvesk kaina: ");
-                inputPrice = ConvertInputToDouble();
+                inputPrice = ConvertInputToDoubleIfPositive();
                 if (inputPrice < 0) return;
                 Console.Write("Įvesk aprašymą: ");
                 string inputDescription = Console.ReadLine();
