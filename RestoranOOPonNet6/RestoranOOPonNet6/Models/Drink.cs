@@ -218,6 +218,11 @@ namespace RestoranOOPonNet6.Models
             }
         }
 
+        public void ClearAllLists()
+        {
+            AllDrinks.Clear();
+            FreeIDForNewDrinks.Clear();
+        }
 
         // savybes ir konstruktoriai
         public Drink() { }

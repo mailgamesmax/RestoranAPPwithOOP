@@ -88,7 +88,7 @@ namespace RestoranOOPonNet6.Models
             if (filteredDishes.Count > 0)
                 foreach (var dish in filteredDishes)
                 {
-                    Console.WriteLine($"{dish.UniqID} - {dish.Name} - {dish.Price}e ");
+                    Console.WriteLine($"\n{dish.UniqID} - {dish.Name} - {dish.Price}e ");
                 }
             else
             {
@@ -235,6 +235,11 @@ namespace RestoranOOPonNet6.Models
             return dish;
         }
 
+        public void ClearAllLists() 
+        {
+            AllDishes.Clear();
+            FreeIDForNewDishes.Clear();
+        }
 
         /*        public void ImportAllFromCSV()
                 {

@@ -17,7 +17,9 @@ namespace RestoranOOPonNet6.Models
             int inputAvailiblePlaces = 0;
             string? repeatAction;
             var createdTable = new TableAndPlace();
-                ImportAllFromCSV(); //nebūtina, bet įvertinau, kaip patikimiausią būdą išvengti dubliavimosi
+            AllTabels.Clear();
+            ImportAllFromCSV(); //šiame modulyje nebūtina, bet įvertinau, kaip patikimiausią būdą išvengti nesutapimų
+
             do
             {
                 CheckForMaxTablesNr();
@@ -109,7 +111,7 @@ namespace RestoranOOPonNet6.Models
             var selectedTable = AllTabels.FirstOrDefault(table => table.TableNr == actualTable);
             if (selectedTable.IsAvailible == true) 
             {
-                selectedTable.NominalAndAvailiblePlaces[selectedTable.NominalAndAvailiblePlaces.Keys.First()] -= placeNeededQ;
+                selectedTable.NominalAndAvailiblePlaces[selectedTable.NominalAndAvailiblePlaces.Values.First()] -= placeNeededQ;
                 Console.WriteLine($"prie {actualTable} stalo liko laisvų vietų: {selectedTable.NominalAndAvailiblePlaces.Values.First()}");
                 selectedTable.IsAvailible = false;
                 UpdateTablesToCSV();
@@ -141,7 +143,6 @@ namespace RestoranOOPonNet6.Models
             }
             else PrintSomethingWrong();
         }
-
 
         public void ShowAllTablesInfo()
         {
@@ -257,18 +258,10 @@ namespace RestoranOOPonNet6.Models
 
         public static void ConvertLineToTableFromFile(int tableNr, int nominalPlaces, int availablePlaces, bool isAvailable, out TableAndPlace createdTable)
         {
-
-            //   var table = new TableAndPlace();
-            // var createdTable = new TableAndPlace();
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine($"kuriamas objektas {tableNr}, {nominalPlaces}, {availablePlaces}, {isAvailable}");
+                        Console.WriteLine($"\tCONTROL kuriamas stalas {tableNr}, {nominalPlaces}, {availablePlaces}, {isAvailable}");
                         Console.ResetColor();
             createdTable = new TableAndPlace(tableNr, new Dictionary<int, int> { { nominalPlaces, availablePlaces } }, isAvailable);
-
-/*            table.UpdateAllTabels(createdTable);
-            table.UpdateCurrentAvailibleTablesHasPlaces(inputTableNr, availiblePlaces);
-*/
-            //return createdTable;
         }
 
         public void FilterActualTablesFromCSV()
@@ -410,7 +403,7 @@ namespace RestoranOOPonNet6.Models
             }
         }
 
-        public void SelectByTableNrFromFile(string inputTableNr)
+        public void ShowByTableNrFromFile(string inputTableNr)
         {
             using (StreamReader sr = new StreamReader(tableFilePath))
             {
@@ -476,7 +469,7 @@ namespace RestoranOOPonNet6.Models
             if (!string.IsNullOrEmpty(inputTableNr))
             {
                 inputNominalPlaces = inputActualPlaces = inputAvailibleStatus = "";
-                SelectByTableNrFromFile(inputTableNr);
+                ShowByTableNrFromFile(inputTableNr);
                 return;
 
             }
@@ -549,6 +542,12 @@ namespace RestoranOOPonNet6.Models
                     }
                     Console.WriteLine();
                 }*/ // is dalies dubliuojasi su filtravimu pagal visus kriterijus END
+
+        public void ClearAllLists()
+        {
+            AllTabels.Clear();
+            FreeNrForNewTables.Clear();
+        }
 
 
         // konstruktoriai, savybes
