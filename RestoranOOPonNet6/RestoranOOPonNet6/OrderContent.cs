@@ -11,11 +11,13 @@ namespace RestoranOOPonNet6
 {
     internal class OrderContent : CommonFunctions, ISimilarFuntions
     {
-        public void CreateActiveOrderContent(int table, int orderID, string itemName, double itemPrice, int itemQ)
+        //public double CreateActiveOrderContent(int table, string orderID, string itemName, double itemPrice, double itemQ)
+        public double CreateActiveOrderContent(int table, string orderID)
         {
-            var newOrderContent = new OrderContent(table, orderID, itemName, itemPrice, itemQ);
+            var newOrderContent = new OrderContent(table, orderID);
             AddNewToCSV(newOrderContent);
-            AllActiveOrdersContent.Add(newOrderContent);           
+            AllActiveOrdersContent.Add(newOrderContent);
+            return newOrderContent.LinePrice;
         }
 
         public void AddNewToCSV(OrderContent newOrderContent)
@@ -35,7 +37,7 @@ namespace RestoranOOPonNet6
             }
         }
 
-        public OrderContent ConvertLineToOrderContent(int table, int orderID, string itemName, double itemPrice, int itemQ, double linePrice)
+        public OrderContent ConvertLineToOrderContent(int table, string orderID, string itemName, double itemPrice, double itemQ, double linePrice)
         {
             var orderContent = new OrderContent(table, orderID, itemName, itemPrice, itemQ, linePrice);
             return orderContent;
@@ -43,11 +45,9 @@ namespace RestoranOOPonNet6
 
         
 
-        public List<OrderContent> SelectActiveByTable()
+        public List<OrderContent> SelectActiveByTable(int tableNr)
         {
-            Console.Write("Užsakymo stalo nr? (0 - norint nutraukt veiksmą) ");
-            int tableNr = int.Parse(Console.ReadLine());
-            if (tableNr < 1) return null;
+            if (tableNr < 1) return  null;
             else
             {
             var allItemsOfSelectedActiveOrder = AllActiveOrdersContent.Where(c => c.Table == tableNr).ToList();
@@ -57,14 +57,16 @@ namespace RestoranOOPonNet6
                     Console.WriteLine($"selected table {item.Table}");
                 }
             return allItemsOfSelectedActiveOrder; //paskelbti isnanksto?
-            }            
+            }
         }
         
-        public void CloseActiveOrderContent() 
+        public int CloseActiveOrderContent() 
         {
+            Console.Write("Užsakymo stalo nr? (0 - norint nutraukt veiksmą) ");
+            int tableNr = int.Parse(Console.ReadLine());
 
             List<OrderContent> allItemsOfSelectedActiveOrder = new List<OrderContent>();
-            allItemsOfSelectedActiveOrder = SelectActiveByTable();
+            allItemsOfSelectedActiveOrder = SelectActiveByTable(tableNr);
             
             Console.WriteLine("\tCONTROL Close listo papildymas.........\n");
             if (allItemsOfSelectedActiveOrder != null)
@@ -88,18 +90,18 @@ namespace RestoranOOPonNet6
                 SaveToTempOrdersCSV(0);
                 UpdateFile(ClosedOrdersContentsFilePath, temporaryOredersFilePath);
                 SaveToTempOrdersCSV(1);
-                UpdateFile(ActiveOrdersContentsFilePath, temporaryOredersFilePath);                
+                UpdateFile(ActiveOrdersContentsFilePath, temporaryOredersFilePath);
+                return tableNr;
             }
             else
             {
                 PrintSomethingWrong();
-                return;
+                return tableNr = 0;
             }
         }
 
         public void SaveToTempOrdersCSV(int ActiveStatus)
         {
-            //string targetFilePath = ChooseRightTargetFile(ActiveStatus);
             using (StreamWriter sw = new StreamWriter(temporaryOredersFilePath))
             {
                 if (ActiveStatus == 1)
@@ -115,7 +117,7 @@ namespace RestoranOOPonNet6
                 }
                 else if (ActiveStatus == 0)
                 {
-                        //using (StreamWriter sw = new StreamWriter(temporaryAssortimentFilePath))
+
                         {
                             Console.WriteLine("\tall closed contents foreach for renewing........");
                             foreach (var item in OrderContent.AllClosedOrdersContent)
@@ -133,23 +135,22 @@ namespace RestoranOOPonNet6
     
 
     public string ChooseRightTargetFile(int ActiveStatus)
+    {
+        string rightFilePath;
+        if (ActiveStatus == 1) //active
         {
-                string rightFilePath;
-                if (ActiveStatus == 1) //active
-                {
-
-                    return rightFilePath = Path.Combine(currentDirectory, "ActiveOrdersContents.csv");
-                }
-                else if (ActiveStatus == 0) //closed
-                {
-                    return rightFilePath = Path.Combine(currentDirectory, "ClosedOrdersContents.csv");
-                }
-                else
-                {
-                    Console.WriteLine("neegzistuojantis order status");
-                    return rightFilePath = string.Empty;
-                }
+            return rightFilePath = Path.Combine(currentDirectory, "ActiveOrdersContents.csv");
         }
+        else if (ActiveStatus == 0) //closed
+        {
+            return rightFilePath = Path.Combine(currentDirectory, "ClosedOrdersContents.csv");
+        }
+        else
+        {
+            Console.WriteLine("neegzistuojantis order status");
+            return rightFilePath = string.Empty;
+        }
+    }
 
         public void ImportAllFromCSV() 
         {
@@ -176,10 +177,10 @@ namespace RestoranOOPonNet6
                         var recoveredContent = new OrderContent();
                             
                         int table = int.Parse(lineValues[0].Trim());
-                        int id = int.Parse(lineValues[1].Trim());
+                        string id = lineValues[1].Trim().ToString();
                         string itemName = lineValues[2].Trim().ToString();
                         double price = double.Parse(lineValues[3].Trim());
-                        int itemQ = int.Parse(lineValues[4].Trim());
+                        double itemQ = double.Parse(lineValues[4].Trim());
                         double linePrice = double.Parse(lineValues[5].Trim());
                         //CONTROL
                         Console.ForegroundColor = ConsoleColor.Yellow;
@@ -217,10 +218,10 @@ namespace RestoranOOPonNet6
                         var recoveredContent = new OrderContent();
 
                         int table = int.Parse(lineValues[0].Trim());
-                        int id = int.Parse(lineValues[1].Trim());
+                        string id = lineValues[1].Trim().ToString();
                         string itemName = lineValues[2].Trim().ToString();
                         double price = double.Parse(lineValues[3].Trim());
-                        int itemQ = int.Parse(lineValues[4].Trim());
+                        double itemQ = int.Parse(lineValues[4].Trim());
                         double linePrice = double.Parse(lineValues[5].Trim());
                         
                         //CONTROL
@@ -231,6 +232,7 @@ namespace RestoranOOPonNet6
                         recoveredContent = ConvertLineToOrderContent(table, id, itemName, price, itemQ, linePrice);
 
                         AllClosedOrdersContent.Add(recoveredContent);
+                        currentLine++;
                     }
                     else
                     {
@@ -271,10 +273,18 @@ namespace RestoranOOPonNet6
 
         //savybes ir konstruktoriai
         public OrderContent() { }
-        public OrderContent(string name) { }
+        public OrderContent(int table, string orderID)
+        {
+            Table = table;
+            OrderID = orderID;
+            ItemName = "Staliuko rezervacija";
+            ItemPrice = 0;
+            ItemQ = 1;
+            LinePrice = 0;
+        }
 
 
-        public OrderContent(int table, int orderID, string itemName, double itemPrice, int itemQ)
+        public OrderContent(int table, string orderID, string itemName, double itemPrice, double itemQ)
         {
             Table = table;
             OrderID = orderID;
@@ -283,16 +293,16 @@ namespace RestoranOOPonNet6
             ItemQ = itemQ;
             LinePrice = itemPrice * itemQ;
         }
-        public OrderContent(int table, int orderID, string itemName, double itemPrice, int itemQ, double linePrice) : this(table, orderID, itemName, itemPrice, itemQ)
+        public OrderContent(int table, string orderID, string itemName, double itemPrice, double itemQ, double linePrice) : this(table, orderID, itemName, itemPrice, itemQ)
         {
             LinePrice = linePrice;
         }
 
         public int Table { get; set; }
-        public int OrderID { get; set; }
+        public string OrderID { get; set; }
         public string ItemName { get; set; }
         public double ItemPrice { get; set; }
-        public int ItemQ { get; set; }
+        public double ItemQ { get; set; }
         public double LinePrice { get; set; }
 
 

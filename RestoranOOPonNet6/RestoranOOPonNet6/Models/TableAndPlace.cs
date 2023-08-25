@@ -102,10 +102,10 @@ namespace RestoranOOPonNet6.Models
             Console.WriteLine("Bendras stalų sąrašas atnaujintas.");
         }
 
-        public void OcupideTableEverywere(int actualTable, int placeNeededQ) 
+        public void OcupideTableEverywere(int actualTable, string inputTablePlaces) 
         {
             //public void RemoveTableFromCSV(int actualTable)                        
-
+            int placeNeededQ = int.Parse(inputTablePlaces);
             var selectedTable = AllTabels.FirstOrDefault(table => table.TableNr == actualTable);
             if (selectedTable.IsAvailible == true) 
             {
@@ -237,15 +237,6 @@ namespace RestoranOOPonNet6.Models
                             {
                                 sw.WriteLine(line);
                             }
-                            //var createdTable = new TableAndPlace();
-
-/*                            int nominalPlaces = int.Parse(lineValues[1].Trim());
-                            int availablePlaces = int.Parse(lineValues[2].Trim());
-                            bool isAvailable = bool.Parse(lineValues[3].Trim());
-*/
-                            //control                          
-                            //UpdateAllTabels(createdTable);
-                            //UpdateCurrentAvailibleTablesHasPlaces(nominalPlaces, availablePlaces);
                         }
                         else
                         {
@@ -254,8 +245,7 @@ namespace RestoranOOPonNet6.Models
                             Console.ResetColor();
                         }
                     }
-                }
-                
+                }               
                 UpdateFile(tableFilePath, temporaryTableFilePath);
             }
             else
@@ -309,7 +299,7 @@ namespace RestoranOOPonNet6.Models
 
            //int tableNr = string.IsNullOrEmpty(inputTableNr) ? int.Parse(lineValues[0].Trim()) : int.Parse(inputTableNr); // pvz isiminimui 
 
-            ShowTableInfo(MyFilteredTabels);
+            ShowTablesInfo(MyFilteredTabels);
         }
 
         public void SelectTableByAvailabilityStatusFromFile(string inputAvailibleStatus)
@@ -393,6 +383,33 @@ namespace RestoranOOPonNet6.Models
             }
         }
 
+        public void SelectAvailableTablesByNominalPlacesFromFile(string inputNominalPlaces)
+        {
+            using (StreamReader sr = new StreamReader(tableFilePath))
+            {
+                string line;
+                int currentLine = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] lineValues = line.Split(',');
+                    if (lineValues.Length == 4)
+                    {
+                        var createdTable = new TableAndPlace();
+                        if (bool.Parse(lineValues[3]) == true && int.Parse(lineValues[1].Trim()) >= int.Parse(inputNominalPlaces))
+                        {
+                            int tableNr = int.Parse(lineValues[0].Trim());
+                            int nominalPlaces = int.Parse(lineValues[1].Trim());
+                            int availablePlaces = int.Parse(lineValues[2]);
+                            bool isAvailable = bool.Parse(lineValues[3]);
+                            ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+                            MyFilteredTabels.Add(createdTable);
+                        }
+                    }
+                    else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
+                }
+            }
+        }
+
         public void SelectByTableNrFromFile(string inputTableNr)
         {
             using (StreamReader sr = new StreamReader(tableFilePath))
@@ -419,9 +436,37 @@ namespace RestoranOOPonNet6.Models
                 }
             }
 
-            ShowTableInfo(MyFilteredTabels);
+            ShowTablesInfo(MyFilteredTabels);
         }
 
+/*        public void SelectOcupideByTableNrFromFile(int actualTableNr)
+        {
+            using (StreamReader sr = new StreamReader(tableFilePath))
+            {
+                string line;
+                int currentLine = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] lineValues = line.Split(',');
+                    if (lineValues.Length == 4)
+                    {
+                        var createdTable = new TableAndPlace();
+                        if (int.Parse(lineValues[0].Trim()) == int.Parse(actualTableNr))
+                        {
+                            int tableNr = int.Parse(lineValues[0].Trim());
+                            int nominalPlaces = int.Parse(lineValues[1].Trim());
+                            int availablePlaces = int.Parse(lineValues[2]);
+                            bool isAvailable = bool.Parse(lineValues[3]);
+                            ConvertLineToTableFromFile(tableNr, nominalPlaces, availablePlaces, isAvailable, out createdTable);
+                            MyFilteredTabels.Add(createdTable);
+                        }
+                    }
+                    else { Console.WriteLine($"{currentLine} eilutėje klaidingas stalo savybių kiekis"); }
+                }
+            }
+
+            ShowTablesInfo(MyFilteredTabels);
+        }*/
 
         public void InputTableFilterCriteria(out string inputTableNr, out string inputNominalPlaces, out string inputActualPlaces, out string inputAvailibleStatus)
         {
@@ -455,7 +500,7 @@ namespace RestoranOOPonNet6.Models
             MyFilteredTabels.Add(tableAndPlace);
         }
 
-        public void ShowTableInfo(List<TableAndPlace> anyTablesList)
+        public void ShowTablesInfo(List<TableAndPlace> anyTablesList)
         {
 
             Console.WriteLine("foreach method........");

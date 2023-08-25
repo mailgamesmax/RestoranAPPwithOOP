@@ -15,16 +15,6 @@ namespace RestoranOOPonNet6
 
             //Console.WriteLine(DateTime.Now);
 
-            // order line valdymas
-            var oc = new OrderContent();
-            oc.ImportAllFromCSV();
-
-/*            oc.CreateActiveOrderContent(1, 2, "kaku", 2, 5);
-            oc.CreateActiveOrderContent(2, 3, "kaku", 2, 5);*/
-
-
-            oc.CloseActiveOrderContent();
-
             //(int table, int orderID, string itemName, double itemPrice, int itemQ)
 
 
@@ -68,7 +58,7 @@ namespace RestoranOOPonNet6
                         else inputAvailibleStatus = string.Empty;
                         Console.WriteLine(inputAvailibleStatus);*/
 
-            //tableAndPlace.ImportAllFromCSV();
+            tableAndPlace.ImportAllFromCSV();
             //TableAndPlace.FilterTablesByFreePlaces(3);
             //tableAndPlace.CreateNewTable();
             //tableAndPlace.RemoveTableFromCSV(0);
@@ -87,8 +77,23 @@ namespace RestoranOOPonNet6
             #endregion
             //stalu valdymas END
 
+            // order item valdymas
+            var oc = new OrderContent();
+            oc.ImportAllFromCSV();
 
+            /*            oc.CreateActiveOrderContent(1, 2, "kaku", 2, 5);
+                        oc.CreateActiveOrderContent(2, 3, "kaku", 2, 5);*//*
+                        oc.CloseActiveOrderContent();
+            */          // order item valdymas END
+
+            //order summary
+            var order = new OrderSummary();
+            order.ImportAllFromCSV();
+            //order.CreateOrder(); //reserve table...
+            order.CloseActiveOrder();
+            //order.InputPredataForNewOrder();
 
         }
+
     }
 }

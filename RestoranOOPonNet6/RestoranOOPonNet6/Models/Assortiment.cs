@@ -123,8 +123,8 @@ namespace RestoranOOPonNet6.Models
 
         public void AddNewToCSV(Assortiment assortiment, string dishOrDrink)
         {
-            string myFilePath = ChooseRightAssortimentFile(dishOrDrink);
-            using (StreamWriter sw = new StreamWriter(myFilePath, true, Encoding.UTF8))
+            string targetFilePath = ChooseRightAssortimentFile(dishOrDrink);
+            using (StreamWriter sw = new StreamWriter(targetFilePath, true, Encoding.UTF8))
             {
                 string line = ConvertAssortimentToString(assortiment);
                 sw.WriteLine(line);
